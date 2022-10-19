@@ -1,0 +1,132 @@
+1. Installation Part:
+
+su hduser
+cd /usr/local
+sudo wget https://archive.apache.org/dist/hbase/2.4.2/hbase-2.4.2-bin.tar.gz
+sudo tar xzvf hbase-2.4.2-bin.tar.gz
+sudo mv hbase-2.4.2 hbase
+cd hbase/conf
+
+2. Add the following line to sudo nano hbase-env.sh:
+
+sudo nano hbase-env.sh 
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+3. Add the following lines between <configuration> and </configuration> 
+of sudo nano hbase-site.xml:
+
+sudo nano hbase-site.xml 
+<property>
+   <name>hbase.rootdir</name>
+   <value>file:///usr/local/hbase</value>
+</property>
+<property>
+   <name>hbase.zookeeper.property.dataDir</name>
+   <value>/usr/local/hbase/zookeeper</value>
+</property>
+
+4. Give permission to hbase folder.
+
+cd /usr/local
+sudo chmod 777 hbase
+
+5. start HBase and insert data:
+
+cd /usr/local/hbase/bin
+./start-hbase.sh
+./hbase shell
+
+6. Inside the hbase shell:
+
+create 'test', 'cf'
+put 'test', 'row1', 'cf:a', 'Shubham'
+put 'test', 'row2', 'cf:b', '13'
+put 'test', 'row3', 'cf:c', 'Nagvekar'
+scan 'test'
+exit
+
+./stop-hbase.sh
+
+7. Now we shall access this data using Python:
+
+sudo apt install python3-pip 
+pip3 install happybase
+
+8. Python data manipulation part:
+
+cd /usr/local/hbase/bin
+./hbase-daemon.sh start thrift
+./start-hbase.sh
+
+python3
+
+import happybase as hb
+conn=hb.Connection('127.0.0.1', 9090)
+conn.table('test').row('row1')
+conn.table('test').row('row2')
+conn.table('test').row('row3')
+exit()
+
+./stop-hbase.sh
+./hbase-daemon.sh stop thrift
+
+9. HDFS to HBASE:
+
+sudo service ssh start
+ssh localhost
+/usr/local/hadoop/sbin/start-all.sh
+jps
+
+cd /usr/local/hbase/bin
+./start-hbase.sh
+
+10. Start HBase Shell
+
+./hbase shell
+
+11. Create a table in HBase:
+
+create 'test1', 'cf'
+put 'test', 'row1', 'cf:a', 'Shubham'
+put 'test', 'row2', 'cf:b', '13'
+put 'test', 'row3', 'cf:c', 'Mumbai'
+scan 'test'
+exit
+
+12. TO EXPORT TO HBASE
+Create a text file in /usr/local named simple1.txt
+
+cd /usr/local
+sudo nano simple1.txt
+1,patkar
+2,mithibai
+3,kc
+
+13. Copy file to HDFS
+
+hdfs dfs -copyFromLocal /usr/local/simple1.txt /
+cd /usr/local/hbase/bin
+
+14. import simple1.txt to hbase.
+
+./hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," -Dimporttsv.columns=HBASE_ROW_KEY,cf test1 /simple1.txt
+
+15. Start HBase Shell and check table contents
+
+./hbase shell
+
+scan 'test1'
+exit
+
+15. TO EXPORT HBASE TABLE TO HDFS
+
+cd /usr/local/hbase/bin
+./hbase org.apache.hadoop.hbase.mapreduce.Export test /location
+hdfs dfs -ls /location
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+➢ Start Hadoop:
+
+sudo service ssh start
+
+ssh localhost
+
+/usr/local/hadoop/sbin/start-all.sh
+
+jps
+
+➢ To remove the existing file from HDFS:
+
+hdfs dfs -rm /bda.txt
+
+➢ Clear Output of the previous run at default HDFS location: 
+
+hdfs dfs -rm -r /output
+
+➢ Create a text file with some words at local file system (try to include same and repeated words) (Press Ctrl+S and then Ctrl+X)
+
+sudo nano bda.txt OR sudo nano /home/hduser/bda.txt
+
+➢ IN FILE: 
+
+India Ron
+Ron India City Mumbai
+Mumbai City
+
+➢ Move bda.txt file to HDFS:
+
+hdfs dfs -put /home/hduser/bda.txt /
+
+➢ Running MapReduce for wordcount file bda.txt: 
+
+hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar wordcount /bda.txt /output
+
+➢ Check/display output at default output location:
+
+hdfs dfs -head /output/part-r-00000
+
+➢ To get output in a .txt file in HDFS(optional): 
+
+hdfs dfs -mv /output/part-r-00000 /output/op.txt
+
+➢ To get output in a .txt file in default file location(optional): 
+
+hdfs dfs -get /output/op.txt /home/hduser
+
+➢ To view content of HDFS location, use following command
+
+hdfs dfs -ls /
+
