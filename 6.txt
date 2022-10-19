@@ -1,0 +1,72 @@
+1. Installation Part:
+
+su hduser
+
+cd /usr/local
+
+sudo wget https://downloads.apache.org/pig/pig-0.17.0/pig-0.17.0.tar.gz
+
+sudo tar -xvzf pig-0.17.0.tar.gz
+
+sudo mv pig-0.17.0 pig
+
+cd /home/hduser
+
+2. In the sudo nano ~/.bashrc file, add these lines very carefully
+sudo nano ~/.bashrc
+
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export PATH=$PATH:/usr/local/pig/bin
+export PIG_HOME=/usr/local/pig
+export PIG_CLASSPATH=/usr/local/hadoop/etc/hadoop
+
+
+source ~/.bashrc
+
+3. Create a file called sudo nano customers.txt and save it in any directory
+
+1) Running in local mode (pig can access data present only in local file system, eg the customer file)
+
+sudo nano customers.txt
+
+➢ ADD THIS LINE: 
+
+Shubham, Rahul, Suraj, Yash
+
+➢ Start pig using following command:
+
+pig -x local
+
+customers = LOAD 'customers.txt' USING PigStorage(',');
+
+dump customers;
+
+quit;
+
+(2) Running in HDFS mode (pig can access data on HDFS)
+First we need to move customers.txt to HDFS
+For that start hadoop,
+
+sudo service ssh start
+
+ssh localhost
+
+start-all.sh
+
+jps
+
+hdfs dfs -put ./customers.txt /
+
+5. Start pig using pig command
+
+pig
+
+customers = LOAD 'hdfs://localhost:54310/customers.txt' USING PigStorage(',');
+dump customers;
+quit;
+
+
+
+
+
